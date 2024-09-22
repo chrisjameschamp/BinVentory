@@ -7,6 +7,7 @@
     <title>{% block title %}BinVentory{% endblock %}</title>
     <!-- Darkly Theme from Bootswatch -->
     <link href="//cdn.jsdelivr.net/npm/bootswatch@5.2.3/dist/darkly/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
     <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
 </head>
 <body>
@@ -14,10 +15,12 @@
         <div class="container-fluid">
             <a class="navbar-brand" href="{{ url_for('homepage') }}"><img src="{{ url_for('static', filename='images/Full_Row.svg') }}" alt="BinVentory" class="img-fluid" style="width: 150px;"></a>
             <div class="justify-content-end">
-                <!-- Magnifying glass icon to trigger the search modal -->
-                <button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#searchModal">
-                    <i class="fas fa-search"></i> <!-- FontAwesome icon for magnifying glass -->
-                </button>
+                {% block search %}
+                  <!-- Magnifying glass icon to trigger the search modal -->
+                  <button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#searchModal">
+                      <i class="fas fa-search"></i> <!-- FontAwesome icon for magnifying glass -->
+                  </button>
+                {% endblock %}
             </div>
         </div>
     </nav>
@@ -50,6 +53,5 @@
 
     <!-- Bootstrap JS and dependencies -->
     <script src="//cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-    <script src="//kit.fontawesome.com/9318756ce9.js" crossorigin="anonymous"></script>
 </body>
 </html>

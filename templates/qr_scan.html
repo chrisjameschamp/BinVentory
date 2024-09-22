@@ -18,14 +18,11 @@
 <div class="mb-4">
   <h2 class="text-uppercase fs-6 text-center custom-blue">Scan QR Code</h2>
 
-  <!-- QR Code Reader -->
-  <div id="qr-reader" class="mb-4" style="display: none;"></div>
-
-  <!-- QR Scan result (optional) -->
-  <div id="qrResult" class="alert alert-info" style="display: none;"></div>
-
   <!-- Status Message Box -->
   <div id="statusMessage" class="mt-3"></div>
+
+  <!-- QR Code Reader -->
+  <div id="qr-reader" class="mb-4" style="display: none;"></div>
 </div>
 
 <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
@@ -65,11 +62,17 @@
           { fps: 10, qrbox: { width: 250, height: 250 } },
           (decodedText, decodedResult) => {
             // Handle the decoded result (QR code content)
-            document.getElementById('qrResult').innerText = 'Scanned QR Code: ' + decodedText;
-            document.getElementById('qrResult').style.display = 'block';
+            const binventoryHost = "{{ request.host_url }}".replace(/\/+$/, '');
+            const scannedUrl = new URL(decodedText);
+            const scannedHost = scannedUrl.origin.replace(/\/+$/, '');
 
-            // Redirect to the decoded QR code content
-            window.location.href = decodedText;
+            if (scannedHost == binventoryHost) {
+              showStatusMessage('primary', 'Scanned QR Code: ' + decodedText);
+              window.location.href = decodedText;
+            } else {
+              // Handle the error of starting the scanner
+              showStatusMessage('danger', 'The scanned QR code is not a valid Binventory QR code.');
+            }
           }
         ).catch(err => {
           // Handle the error of starting the scanner

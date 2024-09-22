@@ -291,7 +291,8 @@ def view_location(location_id):
 @app.route('/qr_scan')
 @login_required
 def qr_scan():
-    return render_template('qr_scan.html')
+    host_url = request.host_url  # This gets the current host
+    return render_template('qr_scan.html', host_url=host_url)
 
 @app.route('/bin/<int:bin_id>')
 @login_required
