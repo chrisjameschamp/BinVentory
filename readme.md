@@ -1,13 +1,16 @@
 <div align="center">
   <img width="500" alt="Header" src="https://raw.githubusercontent.com/chrisjameschamp/BinVentory/43aa6fc07bb1d9b85e73453515033b397f0bdf21/static/images/Full_Row.svg">
 </div>
-<p align="center">A lightweight, easy-to-use inventory management system designed for organizing and tracking items in storage bins</p>
 <div align="center">
   
   ![GitHub documentation](https://img.shields.io/badge/documentation-yes-brightgreen.svg?style=flat-square)
+  ![GitHub issues](https://img.shields.io/github/issues/chrisjameschamp/BinVentory)
+  ![GitHub pull requests](https://img.shields.io/github/issues-pr/chrisjameschamp/BinVentory)
+  ![GitHub](https://img.shields.io/github/license/chrisjameschamp/BinVentory)
   ![GitHub repo size](https://img.shields.io/github/repo-size/chrisjameschamp/BinVentory?style=flat-square)
   ![Github repo languages](https://img.shields.io/github/languages/count/chrisjameschamp/BinVentory?style=flat-square)
   ![Github repo top lang](https://img.shields.io/github/languages/top/chrisjameschamp/BinVentory?style=flat-square)
+  ![Python](https://img.shields.io/badge/python-3.11%2B-blue)
   ![GitHub license](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)
   ![GitHub last commit](https://img.shields.io/github/last-commit/chrisjameschamp/BinVentory?style=flat-square)
 
