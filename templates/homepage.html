@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}BinVentory - Home{% endblock %}
+
+{% block content %}
+<!-- QR Scan Button -->
+<div class="mb-4">
+  <a href="/qr_scan" class="btn btn-outline-light w-100">Scan QR Code</a>
+</div>
+
+<!-- List of Locations -->
+<div class="mb-4">
+    <h2 class="text-uppercase fs-6 text-center custom-blue">Locations</h2>
+    <div class="list-group">
+        {% for location in locations %}
+        <a href="/location/{{ location[0] }}" class="list-group-item list-group-item-action bg-dark text-light">
+            {{ location[1] }}
+        </a>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Full-width + Button -->
+<div class="mb-4">
+    <button type="button" class="btn btn-outline-primary w-100" data-bs-toggle="modal" data-bs-target="#addLocationModal">
+        Add Location
+    </button>
+</div>
+
+<!-- Add Location Modal -->
+<div class="modal fade" id="addLocationModal" tabindex="-1" aria-labelledby="addLocationModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content bg-dark text-light">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addLocationModalLabel">Add New Location</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form method="POST" action="/add_location">
+            <div class="input-group">
+                <input type="text" name="name" class="form-control" placeholder="Location Name" required>
+            </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Add Location</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="mt-4">
+  <a href="/account_settings" class="btn btn-outline-success w-100">Account Settings</a>
+</div>
+
+<div class="mt-4">
+  <a href="/logout" class="btn btn-outline-danger w-100">Logout</a>
+</div>
+{% endblock %}

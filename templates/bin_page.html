@@ -1,0 +1,285 @@
+{% extends "base.html" %}
+
+{% block title %}BinVentory - Bin {{ bin_id }} - {{ bin_name }}{% endblock %}
+
+{% block content %}
+<!-- Breadcrumbs -->
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb bg-dark text-light">
+    <li class="breadcrumb-item"><a href="/" class="text-light">Home</a></li>
+    <li class="breadcrumb-item"><a href="/location/{{ location_id }}" class="text-light">{{ location_name }}</a></li>
+    <li class="breadcrumb-item active text-light" aria-current="page">Bin {{ bin_name }}</li>
+  </ol>
+</nav>
+
+<!-- Full-width Add Item Button at the Top -->
+<div class="mb-4">
+    <button type="button" class="btn btn-outline-primary btn-lg w-100" data-bs-toggle="modal" data-bs-target="#addItemModal">
+        + Add Item
+    </button>
+</div>
+
+<!-- List of Items in the Bin -->
+<div class="mb-4">
+    <h2 class="text-uppercase fs-6 text-center custom-blue">Items in Bin Bin {{ bin_id }} - {{ bin_name }}</h2>
+    <div class="list-group">
+        {% for item in items %}
+        <div class="list-group-item bg-dark text-light d-flex justify-content-between align-items-center">
+          <span>
+              <strong>{{ item[2] }}</strong> - {{ item[3] }}
+          </span>
+          <span>
+              <button type="button" class="btn btn-outline-info btn-sm" data-bs-toggle="modal" data-bs-target="#moveItemModal{{ item[0] }}">
+                  Move
+              </button>
+              <button type="button" class="btn btn-outline-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editItemModal{{ item[0] }}">
+                  Edit
+              </button>
+              <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteItemModal{{ item[0] }}">
+                  Delete
+              </button>
+          </span>
+      </div>
+
+        <!-- Move Item Modal -->
+        <div class="modal fade" id="moveItemModal{{ item[0] }}" tabindex="-1" aria-labelledby="moveItemModalLabel{{ item[0] }}" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content bg-dark text-light">
+              <div class="modal-header">
+                <h5 class="modal-title" id="moveItemModalLabel{{ item[0] }}">Move Item</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <!-- Search input -->
+                <input type="text" class="form-control mb-3" id="searchBin{{ item[0] }}" placeholder="Search bins...">
+                
+                <!-- List of Bins -->
+                <ul class="list-group" id="binList{{ item[0] }}">
+                    {% for other_bin in other_bins %}
+                    <li class="list-group-item list-group-item-action bg-dark text-light">
+                        <a href="/move_item/{{ item[0] }}/{{ other_bin[0] }}" class="text-light">Bin {{ other_bin[1] }}: {{ other_bin[2] }}</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Edit Item Modal -->
+        <div class="modal fade" id="editItemModal{{ item[0] }}" tabindex="-1" aria-labelledby="editItemModalLabel{{ item[0] }}" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content bg-dark text-light">
+              <div class="modal-header">
+                <h5 class="modal-title" id="editItemModalLabel{{ item[0] }}">Edit Item</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <form method="POST" action="/edit_item/{{ item[0] }}">
+                    <div class="input-group">
+                        <input type="text" name="name" class="form-control" value="{{ item[2] }}" placeholder="Item Name" required>
+                    </div>
+                    <div class="input-group mt-2">
+                        <textarea name="description" class="form-control" placeholder="Description">{{ item[3] }}</textarea>
+                    </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+              </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Delete Confirmation Modal -->
+        <div class="modal fade" id="deleteItemModal{{ item[0] }}" tabindex="-1" aria-labelledby="deleteItemModalLabel{{ item[0] }}" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content bg-dark text-light">
+              <div class="modal-header">
+                <h5 class="modal-title" id="deleteItemModalLabel{{ item[0] }}">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                Are you sure you want to delete <strong>{{ item[2] }}</strong>?
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <a href="/delete_item/{{ item[0] }}" class="btn btn-danger">Delete</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Add Item Modal -->
+<div class="modal fade" id="addItemModal" tabindex="-1" aria-labelledby="addItemModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content bg-dark text-light">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addItemModalLabel">Add New Item</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form method="POST" action="/add_item/{{ bin_id }}">
+            <div class="input-group">
+                <input type="text" name="name" class="form-control" placeholder="Item Name" required>
+            </div>
+            <div class="input-group mt-2">
+                <textarea name="description" class="form-control" placeholder="Description"></textarea>
+            </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Add Item</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Edit and Delete Buttons for Bin -->
+<div class="mt-4">
+    <!-- Edit Bin Button -->
+    <button type="button" class="btn btn-outline-warning w-100 mb-2" data-bs-toggle="modal" data-bs-target="#editBinModal">
+        Edit Bin
+    </button>
+
+    <!-- Delete Bin Button -->
+    <button type="button" class="btn btn-outline-danger w-100 mb-2" data-bs-toggle="modal" data-bs-target="#deleteBinModal">
+        Delete Bin
+    </button>
+</div>
+
+<!-- Edit Bin Modal -->
+<div class="modal fade" id="editBinModal" tabindex="-1" aria-labelledby="editBinModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content bg-dark text-light">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editBinModalLabel">Edit Bin</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form method="POST" action="/edit_bin/{{ bin_id }}">
+            <div class="input-group">
+                <input type="text" name="name" class="form-control" value="{{ bin_name }}" placeholder="Bin Name" required>
+            </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Bin Modal -->
+<div class="modal fade" id="deleteBinModal" tabindex="-1" aria-labelledby="deleteBinModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content bg-dark text-light">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteBinModalLabel">Confirm Delete</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to delete <strong>{{ bin_name }}</strong>?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <a href="/delete_bin/{{ bin_id }}" class="btn btn-danger">Delete</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- URL Copy Notification -->
+<div class="position-fixed top-0 end-0 p-3" style="z-index: 5">
+  <div id="copyToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div class="toast-body">
+        Bin URL copied to clipboard!
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+  </div>
+</div>
+
+<!-- Return Buttons -->
+<div class="mt-4">
+    <a href="/location/{{ location_id }}" class="btn btn-secondary w-100 mb-2">Back to Location</a>
+    <a href="/" class="btn btn-secondary w-100">Back to Homepage</a>
+</div>
+
+<!-- Button to Copy URL to Clipboard -->
+<div class="mt-4">
+  <button class="btn btn-outline-success w-100" id="copyUrlBtn">{{ bin_url }}</button>
+</div>
+
+<div class="mt-4"></div>
+  <a href="/logout" class="btn btn-outline-danger w-100">Logout</a>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    // JavaScript function to filter bins based on search input
+    function filterBins(itemId) {
+        const searchInput = document.getElementById('searchBin' + itemId).value.toLowerCase();
+        const binList = document.getElementById('binList' + itemId);
+        const bins = binList.getElementsByTagName('li');
+
+        for (let i = 0; i < bins.length; i++) {
+            const binText = bins[i].innerText.toLowerCase();
+            bins[i].style.display = binText.includes(searchInput) ? "" : "none";
+        }
+    }
+
+    // Attach the filterBins function to the search inputs dynamically
+    const searchFields = document.querySelectorAll('[id^="searchBin"]');
+    searchFields.forEach(field => {
+        const itemId = field.id.replace('searchBin', '');
+        field.addEventListener("keyup", function() {
+            filterBins(itemId);
+        });
+    });
+
+    // JavaScript function to copy the URL from the button to the clipboard
+    function copyToClipboard() {
+        var copyText = document.getElementById("copyUrlBtn").innerText;
+
+        if (navigator.clipboard) {
+            // Use modern clipboard API
+            navigator.clipboard.writeText(copyText).then(function() {
+                // Trigger the toast
+                var toast = new bootstrap.Toast(document.getElementById('copyToast'));
+                toast.show();
+            }).catch(function(err) {
+                console.error('Could not copy text: ', err);
+            });
+        } else {
+            // Fallback method using a temporary input field
+            var tempInput = document.createElement("input");
+            document.body.appendChild(tempInput);
+            tempInput.value = copyText;
+            tempInput.select();
+            document.execCommand("copy");
+            document.body.removeChild(tempInput);
+
+            // Trigger the toast
+            var toast = new bootstrap.Toast(document.getElementById('copyToast'));
+            toast.show();
+        }
+    }
+
+    // Attach the copy function to the button's click event
+    document.getElementById("copyUrlBtn").addEventListener("click", copyToClipboard);
+});
+</script>
+
+{% endblock %}

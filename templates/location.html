@@ -1,0 +1,274 @@
+{% extends "base.html" %}
+
+{% block title %}BinVentory - Location: {{ location_name }}{% endblock %}
+
+{% block content %}
+<!-- Breadcrumbs -->
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb bg-dark text-light">
+    <li class="breadcrumb-item"><a href="/" class="text-light">Home</a></li>
+    <li class="breadcrumb-item active text-light" aria-current="page">{{ location_name }}</li>
+  </ol>
+</nav>
+
+<!-- Full-width Add Bin Button at the Top -->
+<div class="mb-4">
+    <button type="button" class="btn btn-outline-primary btn-lg w-100" data-bs-toggle="modal" data-bs-target="#addBinModal">
+        + Add Bin
+    </button>
+</div>
+
+<!-- List of Bins -->
+<div class="mb-4">
+    <h2 class="text-uppercase fs-6 text-center custom-blue">Bins in {{ location_name }}</h2>
+    <div class="list-group">
+        {% for bin in bins %}
+        <!-- Bin row with onclick and cursor pointer -->
+        <div class="list-group-item bg-dark text-light d-flex justify-content-between align-items-center" onclick="window.location.href='/bin/{{ bin[0] }}'" style="cursor: pointer;">
+            <span>
+                <strong>Bin {{ bin[1] }}: {{ bin[2] }}</strong>
+            </span>
+            <!-- Buttons with stopPropagation to prevent triggering row click -->
+            <span>
+                <button type="button" class="btn btn-outline-info btn-sm" data-bs-toggle="modal" data-bs-target="#moveBinModal{{ bin[0] }}" onclick="event.stopPropagation()">
+                    Move
+                </button>
+                <button type="button" class="btn btn-outline-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editBinModal{{ bin[0] }}" onclick="event.stopPropagation()">
+                    Edit
+                </button>
+                <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteBinModal{{ bin[0] }}" onclick="event.stopPropagation()">
+                    Delete
+                </button>
+            </span>
+        </div>
+
+        <!-- Move Bin Modal -->
+        <div class="modal fade" id="moveBinModal{{ bin[0] }}" tabindex="-1" aria-labelledby="moveBinModalLabel{{ bin[0] }}" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content bg-dark text-light">
+              <div class="modal-header">
+                <h5 class="modal-title" id="moveBinModalLabel{{ bin[0] }}">Move Bin</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <!-- Search input -->
+                <input type="text" class="form-control mb-3" id="searchLocation{{ bin[0] }}" placeholder="Search locations...">
+                
+                <!-- List of Locations -->
+                <ul class="list-group" id="locationList{{ bin[0] }}">
+                    {% for other_location in other_locations %}
+                    <li class="list-group-item list-group-item-action bg-dark text-light">
+                        <a href="/move_bin/{{ bin[0] }}/{{ other_location[0] }}" class="text-light">{{ other_location[1] }}</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Edit Bin Modal -->
+        <div class="modal fade" id="editBinModal{{ bin[0] }}" tabindex="-1" aria-labelledby="editBinModalLabel{{ bin[0] }}" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content bg-dark text-light">
+              <div class="modal-header">
+                <h5 class="modal-title" id="editBinModalLabel{{ bin[0] }}">Edit Bin</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <form method="POST" action="/edit_bin/{{ bin[0] }}">
+                    <div class="input-group">
+                        <input type="text" name="name" class="form-control" value="{{ bin[2] }}" placeholder="Bin Name" required>
+                    </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+              </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Delete Bin Modal -->
+        <div class="modal fade" id="deleteBinModal{{ bin[0] }}" tabindex="-1" aria-labelledby="deleteBinModalLabel{{ bin[0] }}" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content bg-dark text-light">
+              <div class="modal-header">
+                <h5 class="modal-title" id="deleteBinModalLabel{{ bin[0] }}">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                Are you sure you want to delete Bin <strong>{{ bin[2] }}</strong>?
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <a href="/delete_bin/{{ bin[0] }}" class="btn btn-danger">Delete</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Add Bin Modal -->
+<div class="modal fade" id="addBinModal" tabindex="-1" aria-labelledby="addBinModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content bg-dark text-light">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addBinModalLabel">Add New Bin</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form method="POST" action="/add_bin/{{ location_id }}">
+            <div class="input-group">
+                <input type="text" name="name" class="form-control" placeholder="Bin Name" required>
+            </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Add Bin</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Edit and Delete Buttons for Location -->
+<div class="mt-4">
+    <button type="button" class="btn btn-outline-warning w-100 mb-2" data-bs-toggle="modal" data-bs-target="#editLocationModal">
+        Edit Location
+    </button>
+    <button type="button" class="btn btn-outline-danger w-100 mb-2" data-bs-toggle="modal" data-bs-target="#deleteLocationModal">
+        Delete Location
+    </button>
+</div>
+
+<!-- Edit Location Modal -->
+<div class="modal fade" id="editLocationModal" tabindex="-1" aria-labelledby="editLocationModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content bg-dark text-light">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editLocationModalLabel">Edit Location</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form method="POST" action="/edit_location/{{ location_id }}">
+            <div class="input-group">
+                <input type="text" name="name" class="form-control" value="{{ location_name }}" placeholder="Location Name" required>
+            </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Location Modal -->
+<div class="modal fade" id="deleteLocationModal" tabindex="-1" aria-labelledby="deleteLocationModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content bg-dark text-light">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteLocationModalLabel">Confirm Delete</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to delete the location <strong>{{ location_name }}</strong>?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <a href="/delete_location/{{ location_id }}" class="btn btn-danger">Delete</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- URL Copy Notification -->
+<div class="position-fixed top-0 end-0 p-3" style="z-index: 5">
+  <div id="copyLocationToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div class="toast-body">
+        Location URL copied to clipboard!
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+  </div>
+</div>
+
+<div class="mt-4">
+    <a href="/" class="btn btn-secondary w-100">Back to Homepage</a>
+</div>
+
+<!-- Button to Copy Location URL to Clipboard -->
+<div class="mt-4">
+  <button class="btn btn-outline-success w-100" id="copyLocationBtn">{{ location_url }}</button>
+</div>
+
+<div class="mt-4">
+  <a href="/logout" class="btn btn-outline-danger w-100">Logout</a>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    // JavaScript function to filter locations based on search input
+    function filterLocations(binId) {
+        const searchInput = document.getElementById('searchLocation' + binId).value.toLowerCase();
+        const locationList = document.getElementById('locationList' + binId);
+        const locations = locationList.getElementsByTagName('li');
+
+        for (let i = 0; i < locations.length; i++) {
+            const locationText = locations[i].innerText.toLowerCase();
+            if (locationText.includes(searchInput)) {
+                locations[i].style.display = "";
+            } else {
+                locations[i].style.display = "none";
+            }
+        }
+    }
+
+    // JavaScript function to copy the Location URL to the clipboard
+    function copyLocationToClipboard() {
+        var copyText = document.getElementById("copyLocationBtn").innerText;
+
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(copyText).then(function() {
+                var toast = new bootstrap.Toast(document.getElementById('copyLocationToast'));
+                toast.show();
+            }).catch(function(err) {
+                console.error('Could not copy text: ', err);
+            });
+        } else {
+            var tempInput = document.createElement("input");
+            document.body.appendChild(tempInput);
+            tempInput.value = copyText;
+            tempInput.select();
+            document.execCommand("copy");
+            document.body.removeChild(tempInput);
+
+            var toast = new bootstrap.Toast(document.getElementById('copyLocationToast'));
+            toast.show();
+        }
+    }
+
+    // Attach the copy function to the location URL button
+    document.getElementById("copyLocationBtn").addEventListener("click", copyLocationToClipboard);
+
+    // Attach the filterLocations function to the search inputs
+    const searchFields = document.querySelectorAll('[id^="searchLocation"]');
+    searchFields.forEach(field => {
+        const binId = field.id.replace('searchLocation', '');
+        field.addEventListener("keyup", function() {
+            filterLocations(binId);
+        });
+    });
+  });
+</script>
+{% endblock %}

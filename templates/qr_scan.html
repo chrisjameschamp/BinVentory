@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}BinVentory - Scan QR Code{% endblock %}
+
+{% block content %}
+<style>
+  video {
+    width: 100%;
+    height: auto;
+    max-height: 100%;
+    background-color: #000; /* Add a black background to the video element */
+  }
+  #qr-reader {
+    width: 100%;
+  }
+</style>
+
+<div class="mb-4">
+  <h2 class="text-uppercase fs-6 text-center custom-blue">Scan QR Code</h2>
+
+  <!-- QR Code Reader -->
+  <div id="qr-reader" class="mb-4" style="display: none;"></div>
+
+  <!-- QR Scan result (optional) -->
+  <div id="qrResult" class="alert alert-info" style="display: none;"></div>
+
+  <!-- Status Message Box -->
+  <div id="statusMessage" class="mt-3"></div>
+</div>
+
+<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    let qrCodeScanner;
+
+    // Function to display status messages
+    function showStatusMessage(category, message) {
+      const statusDiv = document.getElementById('statusMessage');
+      statusDiv.innerHTML = `<div class="alert alert-${category}">${message}</div>`;
+      statusDiv.style.display = 'block';
+    }
+
+    const qrReaderElement = document.getElementById('qr-reader');
+    qrReaderElement.style.display = 'block'; // Show the QR reader
+
+    // Create an instance of the HTML5 QR Code scanner
+    qrCodeScanner = new Html5Qrcode("qr-reader");
+
+    // Start scanning for QR codes
+    Html5Qrcode.getCameras().then(devices => {
+      if (devices && devices.length) {
+        let backCamera = devices[0]; // Default to the first camera
+
+        // Prefer back camera if available
+        devices.forEach(camera => {
+          if (camera.label.toLowerCase().includes('back')) {
+            backCamera = camera;
+          }
+        });
+
+        // Start the QR code scanner with the selected camera
+        qrCodeScanner.start(
+          backCamera.id, 
+          { fps: 10, qrbox: { width: 250, height: 250 } },
+          (decodedText, decodedResult) => {
+            // Handle the decoded result (QR code content)
+            document.getElementById('qrResult').innerText = 'Scanned QR Code: ' + decodedText;
+            document.getElementById('qrResult').style.display = 'block';
+
+            // Redirect to the decoded QR code content
+            window.location.href = decodedText;
+          }
+        ).catch(err => {
+          // Handle the error of starting the scanner
+          showStatusMessage('danger', `Error starting camera: ${err}`);
+        });
+      } else {
+        showStatusMessage('warning', 'No cameras found.');
+      }
+    }).catch(err => {
+      showStatusMessage('danger', `Camera access error: ${err}`);
+    });
+  });
+</script>
+
+<!-- Return Buttons -->
+<div class="mt-4">
+  <a href="/" class="btn btn-secondary w-100">Back to Homepage</a>
+</div>
+{% endblock %}

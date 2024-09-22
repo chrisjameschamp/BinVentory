@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}BinVentory - Search Results{% endblock %}
+
+{% block content %}
+<div class="text-center mb-4">
+    <h2 class="text-uppercase fs-6 custom-blue">Search Results for "{{ query }}"</h2>
+</div>
+
+{% if results %}
+    <div class="list-group">
+        {% for result in results %}
+            <a href="{% if result[0] == 'location' %}{{ url_for('view_location', location_id=result[1]) }}{% elif result[0] == 'bin' %}{{ url_for('bin_page', bin_id=result[1]) }}{% else %}{{ url_for('bin_page', bin_id=result[6]) }}{% endif %}" class="list-group-item list-group-item-action bg-dark text-light">
+                <strong>
+                    {% if result[0] == 'location' %}
+                        <span class="label">Location:</span> {{ result[2] }}
+                    {% elif result[0] == 'bin' %}
+                        <span class="label">Location:</span> {{ result[4] }}
+                        <span class="separator">&gt;</span> 
+                        <span class="label">Bin {{ result[3] }}:</span> {{ result[2] }}
+                    {% elif result[0] == 'item' %}
+                        <span class="label">Location:</span> {{ result[4] }}
+                        <span class="separator">&gt;</span> 
+                        <span class="label">Bin {{ result[3] }}</span>
+                        <span class="separator">&gt;</span> 
+                        <span class="label">Item:</span> {{ result[2] }} - {{ result[5] }} <!-- Added item description -->
+                    {% endif %}
+                </strong>
+            </a>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="alert alert-warning">No results found for "{{ query }}"</div>
+{% endif %}
+
+<div class="mt-4">
+    <a href="/" class="btn btn-secondary w-100">Back to Homepage</a>
+</div>
+
+<style>
+    .label {
+        font-weight: normal;  /* Lighter weight for "Location:", "Bin:", and "Item:" */
+    }
+    .separator {
+        padding-left: 10px;
+        padding-right: 10px;
+        font-weight: normal;  /* Lighter weight for the ">" symbol */
+    }
+</style>
+{% endblock %}
