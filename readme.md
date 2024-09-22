@@ -4,13 +4,13 @@
 <div align="center">
   
   ![GitHub documentation](https://img.shields.io/badge/documentation-yes-brightgreen.svg?style=flat-square)
-  ![GitHub issues](https://img.shields.io/github/issues/chrisjameschamp/BinVentory)
-  ![GitHub pull requests](https://img.shields.io/github/issues-pr/chrisjameschamp/BinVentory)
-  ![GitHub](https://img.shields.io/github/license/chrisjameschamp/BinVentory)
+  ![GitHub issues](https://img.shields.io/github/issues/chrisjameschamp/BinVentory?style=flat-square)
+  ![GitHub pull requests](https://img.shields.io/github/issues-pr/chrisjameschamp/BinVentory?style=flat-square)
+  ![GitHub](https://img.shields.io/github/license/chrisjameschamp/BinVentory?style=flat-square)
   ![GitHub repo size](https://img.shields.io/github/repo-size/chrisjameschamp/BinVentory?style=flat-square)
   ![Github repo languages](https://img.shields.io/github/languages/count/chrisjameschamp/BinVentory?style=flat-square)
   ![Github repo top lang](https://img.shields.io/github/languages/top/chrisjameschamp/BinVentory?style=flat-square)
-  ![Python](https://img.shields.io/badge/python-3.11%2B-blue)
+  ![Python](https://img.shields.io/badge/python-3.11%2B-blue?style=flat-square)
   ![GitHub license](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)
   ![GitHub last commit](https://img.shields.io/github/last-commit/chrisjameschamp/BinVentory?style=flat-square)
 
